@@ -1,6 +1,7 @@
   
   <?php
-
+  
+  include "../../../users/init.php";
 if(!in_array($user->data()->id,$master_account)){ Redirect::to($us_url_root.'users/admin.php');} //only allow master accounts to manage plugins! ?>
 
 <?php
@@ -16,16 +17,8 @@ $sview = Input::get('sview');
 $hidden = Input::get('hidden');
 $sid = Input::get('snippet');
 $save = Input::get('save');
+$del = Input::get('del');
 
-if($edit != ''){
-  if(is_numeric($edit)){
-    $info = $db->query("SELECT * FROM plg_snippets WHERE id = ?", array($edit))->first();
-    $snippetName = $info->name;
-    $snippetDescription = $info->description;
-    $language = $info->syntax;
-    $code = $info->code;
-  }
-}
 
 
 if(!empty($_POST)){
@@ -37,6 +30,7 @@ if(!empty($_POST)){
       'code'=>$code
 		);
     $db->insert('plg_snippets',$fields);
+    Redirect::to('admin.php?view=plugins_config&plugin=codesnippets');
   }elseif($snippetName != '' && $snippetDescription != '' && $code != '' && $language != '' && $hidden != '' && $edit != '') {
 		$fields = array(
       'name'=>$snippetName,
@@ -45,6 +39,23 @@ if(!empty($_POST)){
       'code'=>$code
 		);
     $db->update('plg_snippets',$edit,$fields);
+    Redirect::to('admin.php?view=plugins_config&plugin=codesnippets');
+  }
+}
+
+if($edit != ''){
+  if(is_numeric($edit)){
+    $info = $db->query("SELECT * FROM plg_snippets WHERE id = ?", array($edit))->first();
+    $snippetName = $info->name;
+    $snippetDescription = $info->description;
+    $language = $info->syntax;
+    $code = $info->code;
+  }
+}
+if($del != ''){
+  if(is_numeric($del)){
+    $del = $db->query("DELETE FROM plg_snippets WHERE id = ?", array($del))->first();
+    Redirect::to('admin.php?view=plugins_config&plugin=codesnippets');
   }
 }
 ?>
@@ -123,7 +134,7 @@ if($sview == ''){
           <?php if($edit == ''){ ?>
             <input type="button" onclick="this.form.submit()" name="btnsave" value="Add New Snippet" class="btn btn-primary">
 					<?php }else{ ?>
-            <input type="button" onclick="this.form.submit()" name="btnedit" value="Edit Snippet" class="btn btn-primary">
+            <input type="button" onclick="this.form.submit()" name="btnedit" value="Save Changes" class="btn btn-primary">
 
 					<?php } ?>
           <?php } ?>
@@ -134,21 +145,25 @@ if($sview == ''){
 }elseif($sview == 'viewsnippet'){
   $snippet = $db->query("SELECT * FROM plg_snippets WHERE id = ?", array($sid))->first();
 ?>
-<a href="<?=$us_url_root?>users/admin.php?view=plugins_config&plugin=codesnippets"><-Return to Snippets</a><br><br>
-<h1 class="text-center"><?=$snippet->name?></h1><br>
-<h2 class="text-center"><?=$snippet->description?></h2><br><br>
+<a href="<?=$us_url_root?>users/admin.php?view=plugins_config&plugin=codesnippets"><-Return to Snippets</a><br>
+<h2 class="text-center"><?=$snippet->name?></h2>
+<h4 class="text-center"><?=$snippet->description?></h4><br>
 <pre><code class="<?=$snippet->syntax?>"><?=$snippet->code?></code></pre><br>
-<button type="button" onclick="copyToClipboard('<?php echo $snippet->code; ?>')" class="btn btn-primary">Copy to Clipboard</button><br><br>
+<button type="button" onclick="copyToClipboard('<?php echo $snippet->code ?>')" class="btn btn-primary">Copy to Clipboard</button><br><br>
 <form method="post" action="admin.php?view=plugins_config&plugin=codesnippets&sview=new&edit=<?=$snippet->id?>">
         <input type="submit" name="submit" value="Edit Snippet" class="btn btn-primary">
-      </form>
-
-
-
-
+</form>
+<form method="post" action="admin.php?view=plugins_config&plugin=codesnippets&sview=new&del=<?=$snippet->id?>">
+        <input type="submit" name="submit" value="Delete Snippet" class="btn btn-danger">
+</form>
 <?php 
 }
 ?>
+
+      </div>
+    </div>
+ 	</div> <!-- /.col -->
+</div> <!-- /.row -->
 <script>
 function copyToClipboard(str) {
     var $temp = $("<textarea>");
@@ -164,7 +179,3 @@ function copyToClipboard(str) {
     $temp.remove();
 }
 </script>
-      </div>
-    </div>
- 	</div> <!-- /.col -->
-</div> <!-- /.row -->
