@@ -124,6 +124,7 @@ if($sview == ''){
           </select>
           <?php if($language != ''){ ?>
           <input type="hidden" name="hidden" value="1">
+          <input type="hidden" name="edit" value="<?=$edit?>">
           <label for="">Code*</label>      
 <textarea name="NewCode" spellcheck="false" class="prism-live <?= $language ?>">
 
