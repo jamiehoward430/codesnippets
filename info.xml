@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-  <name>Code Snippets</name>
+  <name>Snippets</name>
   <author>Jamie Howard</author>
 <!-- Feel free to include your github repo here -->
-  <website>https://www.userspice.com</website>
+  <website>https://github.com/jamiehoward430/codesnippets</website>
 
 <!-- the version of the plugin iteself -->
   <version>1.0.0</version>
